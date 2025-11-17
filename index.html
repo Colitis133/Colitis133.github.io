@@ -401,31 +401,38 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, getDoc, setDoc, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
         // --- 1. Firebase Initialization ---
-        // These global variables are provided by the environment.
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyCry1RbzJYQQlZxeOIHAUgpbYfCa0e_kZY",
+          authDomain: "stardust-portfolio-e88eb.firebaseapp.com",
+          projectId: "stardust-portfolio-e88eb",
+          storageBucket: "stardust-portfolio-e88eb.firebasestorage.app",
+          messagingSenderId: "229667801282",
+          appId: "1:229667801282:web:0642fc618535bca5cc535b",
+          measurementId: "G-0DT4NZ47FF"
+        };
+        // END OF FIREBASE CONFIG
 
         let db, auth, userId;
 
         try {
             // Initialize Firebase
             const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
             auth = getAuth(app);
             db = getFirestore(app);
 
             // Sign in the user (anonymously for public read)
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-                await signInAnonymously(auth);
-            }
+            await signInAnonymously(auth);
 
-            // Listen for auth state changes to get the user ID
+            // Listen for auth state changes
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     userId = user.uid;
@@ -448,7 +455,7 @@
             if (!postsContainer) return;
 
             // This is the public path to your posts
-            const postsCollectionPath = `artifacts/${appId}/public/data/posts`;
+            const postsCollectionPath = "posts";
             // Create a query to order posts by date, descending (newest first)
             const postsQuery = query(collection(db, postsCollectionPath), orderBy("date", "desc"));
 
